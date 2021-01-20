@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import Burger from '../components/Burger/Burger';
 import { connect } from "react-redux"
+import axios from '../../axios-orders'
 
 import BuildControls from '../components/Burger/BuildControls/BuildControls'
 import Modal from '../components/UI/Modal/Modal'
 import OrderSummary from '../components/Burger/OrderSummary/OrderSummary'
 import Spinner from '../components/UI/Spinner/Spinner'
 import withErrorHandler from '../components/hoc/withErrorHandler/withErrorHandler'
-import axios from '../axios-orders'
-import * as actionTypes from '../store/actions'
+import * as burgerBuilderActions from '../store/actions/index'
 
 class BurgerBuilder extends Component {
     state = {
@@ -16,16 +16,6 @@ class BurgerBuilder extends Component {
         loading: false,
         error: false
     };
-
-    componentDidMount() {
-        axios.get('https://burger-react-1190f-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json')
-            .then(response => {
-                this.setState({ ingredients: response.data })
-            })
-            .catch(error => {
-                this.setState({ error: true })
-            })
-    }
 
     purchaseCancelHandler = () => {
         this.setState({ purchasing: false })
@@ -68,9 +58,6 @@ class BurgerBuilder extends Component {
                     price={this.props.prc} />
             )
         }
-        if (this.state.loading) {
-            orderSummary = <Spinner />
-        }
 
         return (
             <>
@@ -92,8 +79,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientAdded: (ingName) => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName: ingName }),
-        onIngredientRemoved: (ingName) => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName })
+        onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName))
     }
 }
 
